@@ -1,0 +1,2 @@
+pyodbc
+Faker==8.13.2

@@ -5,33 +5,30 @@ fake = Faker()
 
 # Connect to SQL Server
 conn = pyodbc.connect('DRIVER={SQL Server};'
-                    'SERVER=MUPELWA\\CSC4792;'
-                    'DATABASE=Assignment_1;'
-                    'UID=SA;'
-                    'PWD=mupelwa2002;')
+                      'SERVER=MUPELWA\\CSC4792;'
+                      'DATABASE=Assignment_1;'
+                      'UID=SA;'
+                      'PWD=mupelwa2002;')
 
 cursor = conn.cursor()
 
-# Insert departments
-departments = [('Human Resources',), ('Engineering',), ('Finance',)]
-cursor.executemany("INSERT INTO Department (department_name) VALUES (?)", departments)
+# Insert departments with explicit IDs
+departments = [(1, 'Human Resources'), (2, 'Engineering'), (3, 'Finance')]
+cursor.executemany("INSERT INTO Department (departmentID, department_name) VALUES (?, ?)", departments)
 
 # Insert positions with department associations
-positions = [('Manager', 1), ('Technician', 2), ('HR', 1)]  # Assuming department 1 for HR, 2 for Engineering, etc.
-cursor.executemany("INSERT INTO Positions (position_name, departmentID) VALUES (?, ?)", positions)
+positions = [(1, 'Manager', 1), (2, 'Technician', 2), (3, 'HR', 1)]  # Including positionID
+cursor.executemany("INSERT INTO Positions (positionID, position_name, departmentID) VALUES (?, ?, ?)", positions)
 
 # Dummy data insertion for staff
-for _ in range(10):
+for i in range(1, 11):  # Generate 10 staff members with IDs 1-10
     name = fake.name()
-    departmentID = fake.random_int(min=1, max=3)  # Ensure the department matches the available IDs
-    cursor.execute("INSERT INTO Staff (name, departmentID) VALUES (?, ?)", (name, departmentID))
+    departmentID = fake.random_int(min=1, max=3)
+    cursor.execute("INSERT INTO Staff (staffID, name, departmentID) VALUES (?, ?, ?)", (i, name, departmentID))
     
-    # Get the last inserted staff member's ID
-    staffID = cursor.execute("SELECT @@IDENTITY AS id").fetchval()
-    
-    # Now, insert the many-to-many relationship in the Staff_Position table
-    positionID = fake.random_int(min=1, max=3)  # Random position assignment
-    cursor.execute("INSERT INTO Staff_Position (staffID, positionID) VALUES (?, ?)", (staffID, positionID))
+    # Insert into Staff_Position table
+    positionID = fake.random_int(min=1, max=3)
+    cursor.execute("INSERT INTO Staff_Position (staffID, positionID) VALUES (?, ?)", (i, positionID))
 
 # Commit the transaction
 conn.commit()

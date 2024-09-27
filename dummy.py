@@ -12,11 +12,11 @@ conn = pyodbc.connect('DRIVER={SQL Server};'
 
 cursor = conn.cursor()
 
-# Insert positions and departments with correct foreign key references
+# Insert departments
 departments = [('Human Resources',), ('Engineering',), ('Finance',)]
-cursor.executemany("INSERT INTO Departments (department_name) VALUES (?)", departments)
+cursor.executemany("INSERT INTO Department (department_name) VALUES (?)", departments)
 
-# Make sure to associate each position with a department
+# Insert positions with department associations
 positions = [('Manager', 1), ('Technician', 2), ('HR', 1)]  # Assuming department 1 for HR, 2 for Engineering, etc.
 cursor.executemany("INSERT INTO Positions (position_name, departmentID) VALUES (?, ?)", positions)
 
@@ -25,10 +25,10 @@ for _ in range(10):
     name = fake.name()
     departmentID = fake.random_int(min=1, max=3)  # Ensure the department matches the available IDs
     cursor.execute("INSERT INTO Staff (name, departmentID) VALUES (?, ?)", (name, departmentID))
-
+    
     # Get the last inserted staff member's ID
     staffID = cursor.execute("SELECT @@IDENTITY AS id").fetchval()
-
+    
     # Now, insert the many-to-many relationship in the Staff_Position table
     positionID = fake.random_int(min=1, max=3)  # Random position assignment
     cursor.execute("INSERT INTO Staff_Position (staffID, positionID) VALUES (?, ?)", (staffID, positionID))

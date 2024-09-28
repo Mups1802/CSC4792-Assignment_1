@@ -5,10 +5,10 @@ fake = Faker()
 
 # Connect to SQL Server
 conn = pyodbc.connect('DRIVER={SQL Server};'
-                      'SERVER=MUPELWA\\CSC4792;'
-                      'DATABASE=Assignment_1;'
-                      'UID=SA;'
-                      'PWD=mupelwa2002;')
+                    'SERVER=MUPELWA\\CSC4792;'
+                    'DATABASE=Assignment_1;'
+                    'UID=SA;'
+                    'PWD=mupelwa2002;')
 
 cursor = conn.cursor()
 
